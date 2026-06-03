@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <title>Felipe e Ellen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Fallbacks caso a Freestyle Script não esteja instalada -->
+  <link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Quicksand:wght@400;600&display=swap)" rel="stylesheet">
+  <style>
+    :root{
+      /* Paleta vinho + branco, com toque dourado */
+      --bg: #ffffff;
+      --ink: #2b1b21;         /* texto principal (vinho quase marrom) */
+      --muted: #7a5663;       /* texto secundário */
+      --accent: #6e0f2f;      /* vinho profundo */
+      --accent-2: #a01f43;    /* vinho médio */
+      --gold: #c9a15b;        /* dourado suave */
+      --line: #ecd6dd;        /* traço claro rosé */
+      --card: #ffffff;
+      --veil: #faf3f6;
+      --heart-on: #a01f43;
+      --heart-off: #d9c0c8;
+      --shadow: rgba(46, 7, 20, 0.1);
+    }
+    @font-face {
+      font-family: "Freestyle Script";
+      src: local("Freestyle Script"), local("FreestyleScript");
+      font-display: swap;
+    }
+
+    html, body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      font-family: "Quicksand", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    /* Moldura de página com textura sutil e filete dourado */
+    .page {
+      max-width: 1160px;
+      margin: 28px auto;
+      padding: 28px;
+      background:
+        radial-gradient(1000px 600px at 100% 0%, #fff7fb 0%, #ffffff 50%) no-repeat,
+        linear-gradient(180deg, #ffffff 0%, #fff7fb 100%) no-repeat;
+      border: 1px solid rgba(201,161,91,0.35);
+      border-radius: 20px;
+      box-shadow: 0 10px 34px var(--shadow);
+      position: relative;
+      overflow: hidden;
+      page-break-inside: avoid;
+    }
+    .page::before, .page::after{
+      content:"";
+      position:absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .page::before{
+      background:
+        radial-gradient(600px 420px at -10% -10%, rgba(160,31,67,0.08), transparent 60%),
+        radial-gradient(420px 360px at 110% 110%, rgba(201,161,91,0.09), transparent 65%);
+      mix-blend-mode: multiply;
+    }
+    .page::after{
+      border-radius: 20px;
+      box-shadow: inset 0 0 0 1px rgba(201,161,91,0.25), inset 0 0 40px rgba(110,15,47,0.05);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 18px;
+      position: relative;
+    }
+    .title {
+      font-family: "Freestyle Script","Dancing Script","Great Vibes",cursive;
+      font-size: 86px;
+      color: var(--accent);
+      line-height: 1.02;
+      margin: 6px 0 2px;
+      letter-spacing: 0.2px;
+      text-shadow: 0 2px 0 rgba(255,255,255,0.95), 0 8px 22px rgba(110,15,47,0.25);
+    }
+    .subtle-line {
+      width: 220px;
+      height: 10px;
+      margin: 8px auto 2px;
+      background:
+        linear-gradient(90deg, transparent, rgba(201,161,91,0.8) 18%, rgba(110,15,47,0.9) 50%, rgba(201,161,91,0.8) 82%, transparent);
+      border-radius: 14px;
+      filter: drop-shadow(0 2px 4px rgba(201,161,91,0.25));
+      opacity: 0.9;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, #ffffff, #fffafa);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px 18px 20px;
+      box-shadow: 0 8px 18px var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .panel::before{
+      content:"";
+      position:absolute;
+      inset: -50px -50px auto auto;
+      width: 200px; height: 200px;
+      background:
+        radial-gradient(70px 70px at 65% 35%, rgba(160,31,67,0.08), transparent 70%),
+        radial-gradient(60px 60px at 20% 70%, rgba(201,161,91,0.10), transparent 70%);
+      transform: rotate(8deg);
+      pointer-events: none;
+    }
+    .panel h2 {
+      font-family: "Freestyle Script","Dancing Script",cursive;
+      font-size: 40px;
+      margin: 0 0 12px;
+      color: var(--accent-2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 0.3px;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.9);
+    }
+    .panel h2 .emoji { font-size: 26px; }
+
+    /* Linha do tempo */
+    .timeline {
+      border-left: 2px dashed rgba(160,31,67,0.22);
+      margin-left: 10px;
+      padding-left: 18px;
+      position: relative;
+    }
+    .timeline::after{
+      content:"";
+      position:absolute;
+      left:-2px;
+      top:0; bottom:0;
+      border-left: 1px solid rgba(201,161,91,0.25);
+      filter: blur(0.2px);
+    }
+    .event {
+      position: relative;
+      margin: 14px 0;
+      padding-left: 8px;
+    }
+    .event::before {
+      content: "";
+      position: absolute;
+      left: -30px;
+      top: 6px;
+      width: 14px;
+      height: 14px;
+      background: radial-gradient(circle at 35% 35%, #fff 28%, var(--accent) 29% 100%);
+      border: 1.5px solid #fff;
+      box-shadow: 0 0 0 2px rgba(160,31,67,0.6), 0 5px 12px rgba(110,15,47,0.25);
+      border-radius: 50%;
+    }
+    .event .date {
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.2px;
+    }
+    .event .text {
+      color: var(--ink);
+    }
+
+    .tip {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    /* Calendário sofisticado */
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 6px 0 12px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .legend .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: #fff6f8;
+      border: 1px dashed rgba(160,31,67,0.25);
+      border-radius: 999px;
+      box-shadow: inset 0 0 0 1px #fff;
+    }
+    .year {
+      font-family: "Playfair Display", serif;
+      font-size: 22px;
+      color: var(--accent);
+      margin: 12px 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      page-break-after: avoid;
+      letter-spacing: 0.3px;
+    }
+    .year::before {
+      content:"❧";
+      color: var(--gold);
+      opacity: 0.9;
+      font-size: 20px;
+      transform: translateY(-1px);
+    }
+
+    .cal {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      page-break-inside: avoid;
+    }
+    .month {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px;
+      background:
+        linear-gradient(180deg, #ffffff, #fff9fb);
+      box-shadow: 0 6px 14px var(--shadow);
+      display: flex;
+      flex-direction: column;
+      min-height: 190px;
+      page-break-inside: avoid;
+      position: relative;
+    }
+    .month::after{
+      content:"";
+      position:absolute; inset: 6px;
+      border: 1px solid rgba(201,161,91,0.22);
+      border-radius: 10px;
+      pointer-events: none;
+    }
+    .month h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+      color: var(--accent-2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: "Quicksand", sans-serif;
+      letter-spacing: 0.2px;
+    }
+    .dow, .days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .dow div {
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 700;
+      padding-bottom: 4px;
+      border-bottom: 1px dashed rgba(160,31,67,0.25);
+    }
+    .day {
+      aspect-ratio: 1/1;
+      border-radius: 10px;
+      background: #fffbfd;
+      border: 1px solid #edd6dd;
+      display: grid;
+      place-items: center;
+      position: relative;
+      user-select: none;
+      cursor: pointer;
+      transition: transform 0.08s ease, background 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
+      box-shadow: inset 0 0 0 1px #ffffff;
+    }
+    .day:hover { transform: translateY(-1px); border-color: rgba(160,31,67,0.45); }
+    .day.disabled {
+      opacity: 0.40;
+      filter: grayscale(0.2);
+      cursor: default;
+      pointer-events: none;
+    }
+    .day .num {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .heart {
+      font-size: 18px;
+      line-height: 1;
+      transition: transform 0.12s ease;
+      text-shadow: 0 1px 0 #fff;
+    }
+    .day.checked {
+      background: #fff3f6;
+      border-color: rgba(160,31,67,0.55);
+      box-shadow: inset 0 0 0 1px #fff, 0 2px 10px rgba(160,31,67,0.12);
+    }
+    .day.checked .heart {
+      transform: scale(1.15);
+      filter: drop-shadow(0 2px 6px rgba(160,31,67,0.35));
+    }
+    .heart[data-on="true"] { color: var(--heart-on); }
+    .heart[data-on="false"] { color: var(--heart-off); }
+
+    .month-note {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: right;
+      font-style: italic;
+    }
+
+    /* Ornamentos finos */
+    .ornament {
+      position: absolute;
+      inset: -40px auto auto -40px;
+      width: 160px;
+      height: 160px;
+      background:
+        radial-gradient(70px 70px at 60% 60%, rgba(160,31,67,0.10), transparent 70%),
+        radial-gradient(60px 60px at 20% 40%, rgba(201,161,91,0.12), transparent 70%);
+      pointer-events: none;
+      filter: blur(0.2px);
+    }
+
+    /* Quebra entre páginas */
+    .page-break { page-break-before: always; }
+
+    /* Responsivo */
+    @media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
+
+    @media print {
+      body { background: #fff; }
+      .page { box-shadow: none; border: none; margin: 0; border-radius: 0; }
+      a[href]:after { content: ""; }
+      .page-break { page-break-before: always; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Página 1: Título e Linha do tempo (ocorridos) + espaço para escrever momentos -->
+  <div class="page" id="page-1">
+    <header>
+      <div class="title">Felipe e Ellen</div>
+      <div class="subtle-line"></div>
+    </header>
+
+    <div class="grid">
+      <!-- Esquerda: Linha do tempo (eventos já ocorridos) -->
+      <section class="panel" aria-labelledby="linha-do-tempo">
+        <div class="ornament"></div>
+        <h2 id="linha-do-tempo"><span class="emoji">🕰️</span>Linha do tempo</h2>
+        <div class="timeline">
+          <div class="event">
+            <div class="date">05/03</div>
+            <div class="text">Primeiro date e primeiro beijo (de 3 segundos de duração)</div>
+          </div>
+          <div class="event">
+            <div class="date">21/03</div>
+            <div class="text">Primeiro beijo (de verdade agora)</div>
+          </div>
+          <div class="event">
+            <div class="date">04/04</div>
+            <div class="text">Primeira flor e a certeza de que íamos namorar</div>
+          </div>
+          <div class="event">
+            <div class="date">12/04</div>
+            <div class="text">Primeiro cinema</div>
+          </div>
+          <div class="event">
+            <div class="date">23/04</div>
+            <div class="text">Segunda flor</div>
+          </div>
+          <div class="event">
+            <div class="date">03/05</div>
+            <div class="text">Primeira janta feita pelo Felipe</div>
+          </div>
+          <div class="event">
+            <div class="date">12/05</div>
+            <div class="text">Primeiro "Te amo"</div>
+          </div>
+          <div class="event">
+            <div class="date">16/05</div>
+            <div class="text">Primeira janta feita pela Ellen e apresentação dos pais</div>
+          </div>
+          <div class="event">
+            <div class="date">17/05</div>
+            <div class="text">Apresentação dos pais do Felipe</div>
+          </div>
+          <div class="event">
+            <div class="date">30/05</div>
+            <div class="text">Primeiro "evento" nosso como casal</div>
+          </div>
+          <div class="event">
+            <div class="date">06/06</div>
+            <div class="text">Nossa primeira viagem e pedido de namoro oficial</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Direita: Escreva nossos momentos (linha do tempo editável) -->
+      <section class="panel" aria-labelledby="momentos-1">
+        <h2 id="momentos-1"><span class="emoji">✍️</span>Escreva nossos momentos</h2>
+        <div class="timeline" id="future-timeline-1"></div>
+        <p class="tip">Siga o padrão: data e evento. Ex.: 14/06 — Nosso primeiro piquenique.</p>
+      </section>
+    </div>
+  </div>
+
+  <!-- Página 2: Continuação da linha do tempo editável + Calendário (início) -->
+  <div class="page page-break" id="page-2">
+    <header>
+      <div class="title">Felipe e Ellen</div>
+      <div class="subtle-line"></div>
+    </header>
+
+    <section class="panel" aria-labelledby="momentos-2">
+      <h2 id="momentos-2"><span class="emoji">✍️</span>Escreva nossos momentos (continuação)</h2>
+      <div class="timeline" id="future-timeline-2"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="calendario-te-amo-1">
+      <div class="ornament" style="inset:auto -40px -40px auto;"></div>
+      <h2 id="calendario-te-amo-1"><span class="emoji">❤️</span>Calendário do Te amo — início</h2>
+      <div class="legend">
+        <span class="tag">Marque com o coração os dias em que vocês disseram “te amo”.</span>
+      </div>
+      <div id="calendar-portion-1"></div>
+    </section>
+  </div>
+
+  <!-- Página 3: Calendário (restante até 2027) -->
+  <div class="page page-break" id="page-3">
+    <header>
+      <div class="title">Felipe e Ellen</div>
+      <div class="subtle-line"></div>
+    </header>
+
+    <section class="panel" aria-labelledby="calendario-te-amo-2">
+      <div class="ornament" style="inset:auto -40px -40px auto;"></div>
+      <h2 id="calendario-te-amo-2"><span class="emoji">❤️</span>Calendário do Te amo — continuação</h2>
+      <div class="legend">
+        <span class="tag">Marque com o coração os dias em que vocês disseram “te amo”.</span>
+      </div>
+      <div id="calendar-portion-2"></div>
+    </section>
+  </div>
+
+  <script>
+    // CONFIGURAÇÕES
+    const NAMES = "Felipe e Ellen";
+    const FIRST_YEAR = 2026; // início em 12/05/2026
+    const START = { year: FIRST_YEAR, month: 5, day: 12 };
+    const FIXED_END_YEAR = 2027;
+    const INITIAL_MARK_SPAN = { startMonth: 5, startDay: 12, endMonth: 6, endDay: 6 };
+    const DOW = ["S","T","Q","Q","S","S","D"];
+
+    // Persistência
+    const KEY = "te-amo-marks-" + NAMES;
+    const KEY_EVENTS = "future-events-" + NAMES;
+
+    function ymd(d){ const z=n=>String(n).padStart(2,"0"); return d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate()); }
+    function loadState(){ try { return JSON.parse(localStorage.getItem(KEY) || "{}"); } catch { return {}; } }
+    function saveState(state){ localStorage.setItem(KEY, JSON.stringify(state)); }
+    function loadEvents(){ try { return JSON.parse(localStorage.getItem(KEY_EVENTS) || "[]"); } catch { return []; } }
+    function saveEvents(list){ localStorage.setItem(KEY_EVENTS, JSON.stringify(list)); }
+
+    const startDate = new Date(START.year, START.month - 1, START.day);
+    const endDate = new Date(FIXED_END_YEAR, 11, 31);
+
+    // LINHA DO TEMPO EDITÁVEL
+    function makeEditableEvent(dateText="", descText=""){
+      const wrap = document.createElement("div");
+      wrap.className = "event";
+      const d = document.createElement("div");
+      d.className = "date";
+      d.contentEditable = "true";
+      d.spellcheck = false;
+      d.textContent = dateText || "dd/mm";
+      const t = document.createElement("div");
+      t.className = "text";
+      t.contentEditable = "true";
+      t.spellcheck = false;
+      t.textContent = descText || "Evento";
+      wrap.appendChild(d); wrap.appendChild(t);
+      return wrap;
+    }
+
+    function hydrateFutureTimelines(){
+      // 40 entradas (20 + 20): mais que 15 solicitadas, com folga
+      const total = 40;
+      const half = Math.ceil(total/2);
+      const c1 = document.getElementById("future-timeline-1");
+      const c2 = document.getElementById("future-timeline-2");
+      const saved = loadEvents();
+
+      let i = 0;
+      saved.forEach(ev => {
+        const node = makeEditableEvent(ev.date || "", ev.text || "");
+        (i < half ? c1 : c2).appendChild(node); i++;
+      });
+      for (; i<total; i++){
+        const node = makeEditableEvent();
+        (i < half ? c1 : c2).appendChild(node);
+      }
+
+      // Salvar ao digitar
+      [c1, c2].forEach(container => {
+        container.addEventListener("input", () => {
+          const all = [...c1.querySelectorAll(".event"), ...c2.querySelectorAll(".event")].map(ev => ({
+            date: ev.querySelector(".date").textContent.trim(),
+            text: ev.querySelector(".text").textContent.trim()
+          }));
+          saveEvents(all);
+        });
+      });
+    }
+
+    // CALENDÁRIO
+    function daysInMonth(y,m){ return new Date(y, m+1, 0).getDate(); }
+
+    function buildYearBlock(y, fromMonth=0, toMonth=11){
+      const yWrap = document.createElement("div");
+      const yTitle = document.createElement("div");
+      yTitle.className = "year";
+      yTitle.textContent = y;
+      yWrap.appendChild(yTitle);
+
+      const cal = document.createElement("div");
+      cal.className = "cal";
+      yWrap.appendChild(cal);
+
+      const MONTHS = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+
+      for (let m=fromMonth; m<=toMonth; m++){
+        const box = document.createElement("div");
+        box.className = "month";
+
+        const h = document.createElement("h3");
+        h.textContent = MONTHS[m] + " " + y;
+        box.appendChild(h);
+
+        const dow = document.createElement("div");
+        dow.className = "dow";
+        DOW.forEach(d => {
+          const el = document.createElement("div");
+          el.textContent = d;
+          dow.appendChild(el);
+        });
+        box.appendChild(dow);
+
+        const days = document.createElement("div");
+        days.className = "days";
+
+        const firstWeekday = (new Date(y, m, 1).getDay() + 6) % 7; // seg=0
+        for (let i=0; i<firstWeekday; i++){
+          const pad = document.createElement("div");
+          pad.className = "day disabled";
+          days.appendChild(pad);
+        }
+
+        const total = daysInMonth(y,m);
+        for (let d=1; d<=total; d++){
+          const cell = document.createElement("div");
+          cell.className = "day";
+          const num = document.createElement("div");
+          num.className = "num";
+          num.textContent = d;
+          cell.appendChild(num);
+
+          const heart = document.createElement("div");
+          heart.className = "heart";
+          heart.textContent = "❤";
+          heart.setAttribute("data-on","false");
+          cell.appendChild(heart);
+
+          const thisDate = new Date(y, m, d);
+          const enabled = !(thisDate < startDate);
+
+          const initStart = new Date(START.year, INITIAL_MARK_SPAN.startMonth - 1, INITIAL_MARK_SPAN.startDay);
+          const initEnd = new Date(START.year, INITIAL_MARK_SPAN.endMonth - 1, INITIAL_MARK_SPAN.endDay);
+          const isInInitial = thisDate >= initStart && thisDate <= initEnd;
+
+          if (!enabled){
+            cell.classList.add("disabled");
+          } else {
+            const state = loadState();
+            const key = ymd(thisDate);
+
+            // Pré-marcar período inicial
+            if (isInInitial && state[key] === undefined){
+              state[key] = true;
+              saveState(state);
+            }
+
+            const checked = (loadState()[key] === true) || isInInitial;
+            if (checked){
+              cell.classList.add("checked");
+              heart.setAttribute("data-on","true");
+            }
+
+            cell.addEventListener("click", () => {
+              const cur = heart.getAttribute("data-on") === "true";
+              const next = !cur;
+              heart.setAttribute("data-on", next ? "true" : "false");
+              cell.classList.toggle("checked", next);
+
+              const s = loadState();
+              s[key] = next;
+              saveState(s);
+            });
+          }
+
+          days.appendChild(cell);
+        }
+
+        box.appendChild(days);
+        const note = document.createElement("div");
+        note.className = "month-note";
+        note.textContent = "Marque com o coração os dias em que vocês disseram “te amo”.";
+        box.appendChild(note);
+
+        cal.appendChild(box);
+      }
+
+      return yWrap;
+    }
+
+    function renderCalendarPortions(){
+      const p1 = document.getElementById("calendar-portion-1");
+      const p2 = document.getElementById("calendar-portion-2");
+
+      // Página 2: ano 2026 (maio a dezembro)
+      p1.appendChild(buildYearBlock(START.year, START.month - 1, 11));
+
+      // Página 3: ano 2027 (janeiro a dezembro)
+      p2.appendChild(buildYearBlock(2027, 0, 11));
+    }
+
+    // Inicialização
+    hydrateFutureTimelines();
+    renderCalendarPortions();
+    document.title = NAMES;
+  </script>
+</body>
+</html>
