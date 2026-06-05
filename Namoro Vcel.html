@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <title>Felipe e Ellen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <!-- Fallbacks caso a Freestyle Script não esteja instalada -->
+  <link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Playfair+Display:wght@400;700&family=Quicksand:wght@400;600&display=swap)" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#ffffff; --ink:#2b1b21; --muted:#7a5663;
+      --accent:#6e0f2f; --accent2:#a01f43; --gold:#c9a15b;
+      --line:#ecd6dd; --card:#ffffff; --heart-on:#a01f43; --heart-off:#d9c0c8;
+      --shadow: rgba(46, 7, 20, 0.1);
+    }
+    @font-face {
+      font-family:"Freestyle Script";
+      src: local("Freestyle Script"), local("FreestyleScript");
+      font-display: swap;
+    }
+    html,body{margin:0;background:var(--bg);color:var(--ink);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      font-family:"Quicksand", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;}
+    /* Container responsivo */
+    .page{max-width:1160px;margin:min(4vw,28px) auto;padding:clamp(16px,4vw,28px);
+      background:linear-gradient(180deg,#ffffff,#fff7fb);border:1px solid rgba(201,161,91,0.35);
+      border-radius:20px; box-shadow:0 10px 34px var(--shadow); position:relative;}
+    header{text-align:center;margin-bottom:clamp(10px,3vw,18px);}
+    .title{font-family:"Freestyle Script","Dancing Script",cursive;
+      font-size:clamp(44px,10vw,86px); line-height:1.05; color:var(--accent); margin:6px 0 2px;
+      text-shadow:0 2px 0 rgba(255,255,255,0.95), 0 8px 22px rgba(110,15,47,0.25);}
+    .subtle-line{width:clamp(120px,35vw,220px); height:10px; margin:8px auto 2px;
+      background:linear-gradient(90deg,transparent, var(--gold) 18%, var(--accent) 50%, var(--gold) 82%, transparent);
+      border-radius:14px; filter:drop-shadow(0 2px 4px rgba(201,161,91,0.25));}
+    /* Grade: vira 1 coluna no mobile */
+    .grid{display:grid; grid-template-columns:1fr 1fr; gap:clamp(12px,3vw,22px);}
+    @media (max-width: 920px){ .grid{ grid-template-columns:1fr; } }
+
+    .panel{background:linear-gradient(180deg,#ffffff,#fffafa); border:1px solid var(--line);
+      border-radius:16px; padding:clamp(14px,3.5vw,20px); box-shadow:0 8px 18px var(--shadow); position:relative;}
+    .panel h2{font-family:"Freestyle Script","Dancing Script",cursive; color:var(--accent2);
+      font-size:clamp(28px,6.2vw,40px); margin:0 0 10px; display:flex; align-items:center; gap:10px;}
+    .panel h2 .emoji{font-size:clamp(20px,4.8vw,26px);}
+
+    /* Linha do tempo */
+    .timeline{border-left:2px dashed rgba(160,31,67,0.22); margin-left:10px; padding-left:14px;}
+    .event{position:relative; margin:12px 0;}
+    .event::before{content:""; position:absolute; left:-26px; top:6px; width:12px; height:12px;
+      background:radial-gradient(circle at 35% 35%,#fff 28%, var(--accent) 29% 100%);
+      border:1.5px solid #fff; box-shadow:0 0 0 2px rgba(160,31,67,0.6), 0 4px 10px rgba(110,15,47,0.22);
+      border-radius:50%;}
+    .event .date{font-weight:700; color:var(--accent);}
+    .event .text{color:var(--ink);}
+    .tip{font-size:13px; color:var(--muted); margin-top:8px;}
+
+    /* Calendário — mobile first */
+    .year{font-family:"Playfair Display",serif; font-size:clamp(18px,4.6vw,22px); color:var(--accent);
+      margin:12px 0 8px; display:flex; align-items:center; gap:8px;}
+    .year::before{content:"❧"; color:var(--gold); opacity:.9; font-size:clamp(16px,4vw,20px);}
+    .cal{display:grid; grid-template-columns:1fr; gap:clamp(8px,2.8vw,14px);}         /* 1 coluna no celular */
+    @media (min-width: 920px){ .cal{ grid-template-columns: repeat(3, 1fr); } }      /* 3 colunas no desktop */
+
+    .month{border:1px solid var(--line); border-radius:14px; padding:clamp(8px,2.5vw,12px);
+      background:linear-gradient(180deg,#ffffff,#fff9fb); box-shadow:0 6px 14px var(--shadow);
+      display:flex; flex-direction:column;}
+    .month h3{margin:0 0 6px; font-size:clamp(14px,3.8vw,16px); color:var(--accent2);
+      display:flex; align-items:center; justify-content:space-between; font-family:"Quicksand",sans-serif;}
+    .dow,.days{display:grid; grid-template-columns:repeat(7,1fr); gap:clamp(2px,1vw,4px);}
+    .dow div{text-align:center; font-size:clamp(10px,2.6vw,12px); color:var(--muted);
+      font-weight:700; padding-bottom:4px; border-bottom:1px dashed rgba(160,31,67,0.25);}
+    /* Células ampliadas no toque: usam min() e unidade vw para não cortar */
+    .day{
+      width:100%;
+      aspect-ratio: 1 / 1;
+      border-radius:10px; background:#fffbfd; border:1px solid #edd6dd;
+      display:grid; place-items:center; position:relative; user-select:none; cursor:pointer;
+      touch-action:manipulation;
+      transition:transform .08s ease, background .2s ease, box-shadow .2s ease, border .2s ease;
+      box-shadow: inset 0 0 0 1px #ffffff;
+      min-height:min(12vw, 44px);  /* garante altura mínima no celular sem estourar */
+    }
+    .day:hover{transform:translateY(-1px);}
+    .day.disabled{opacity:.4; cursor:default; pointer-events:none;}
+    .day .num{position:absolute; top:6px; left:6px; font-size:clamp(10px,2.6vw,12px); color:var(--muted); font-weight:700;}
+    .heart{font-size:clamp(18px,5.2vw,20px); line-height:1; text-shadow:0 1px 0 #fff; transition:transform .12s ease;}
+    .day.checked{background:#fff3f6; border-color:rgba(160,31,67,0.55); box-shadow:inset 0 0 0 1px #fff, 0 2px 10px rgba(160,31,67,0.12);}
+    .day.checked .heart{transform:scale(1.1);}
+    .heart[data-on="true"]{color:var(--heart-on);} .heart[data-on="false"]{color:var(--heart-off);}
+    .month-note{margin-top:6px; font-size:clamp(11px,2.8vw,12px); color:var(--muted); text-align:right; font-style:italic;}
+
+    /* Espaços entre seções no mobile */
+    .stack{display:flex; flex-direction:column; gap:clamp(14px,4vw,20px);}
+
+    /* Safe areas em iPhone com notch */
+    body{padding-bottom:env(safe-area-inset-bottom);}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="title">Felipe e Ellen</div>
+      <div class="subtle-line"></div>
+    </header>
+
+    <div class="grid">
+      <!-- Linha do tempo ocorrida -->
+      <section class="panel">
+        <h2><span class="emoji">🕰️</span>Linha do tempo</h2>
+        <div class="timeline">
+          <div class="event"><div class="date">05/03</div><div class="text">Primeiro date e primeiro beijo (de 3 segundos de duração)</div></div>
+          <div class="event"><div class="date">21/03</div><div class="text">Primeiro beijo (de verdade agora)</div></div>
+          <div class="event"><div class="date">04/04</div><div class="text">Primeira flor e a certeza de que íamos namorar</div></div>
+          <div class="event"><div class="date">12/04</div><div class="text">Primeiro cinema</div></div>
+          <div class="event"><div class="date">23/04</div><div class="text">Segunda flor</div></div>
+          <div class="event"><div class="date">03/05</div><div class="text">Primeira janta feita pelo Felipe</div></div>
+          <div class="event"><div class="date">12/05</div><div class="text">Primeiro "Te amo"</div></div>
+          <div class="event"><div class="date">16/05</div><div class="text">Primeira janta feita pela Ellen e apresentação dos pais</div></div>
+          <div class="event"><div class="date">17/05</div><div class="text">Apresentação dos pais do Felipe</div></div>
+          <div class="event"><div class="date">30/05</div><div class="text">Primeiro "evento" nosso como casal</div></div>
+          <div class="event"><div class="date">06/06</div><div class="text">Nossa primeira viagem e pedido de namoro oficial</div></div>
+        </div>
+      </section>
+
+      <!-- Escreva nossos momentos -->
+      <section class="panel">
+        <h2><span class="emoji">✍️</span>Escreva nossos momentos</h2>
+        <div class="timeline" id="future-timeline"></div>
+        <p class="tip">Siga o padrão: data e evento. Ex.: 14/06 — Nosso primeiro piquenique.</p>
+      </section>
+    </div>
+
+    <!-- Calendário mobile-first -->
+    <section class="panel" style="margin-top:clamp(14px,4vw,22px);">
+      <h2><span class="emoji">❤️</span>Calendário do Te amo</h2>
+      <div class="tip">Marque com o coração os dias em que vocês disseram “te amo”.</div>
+      <div id="calendar-root" class="stack"></div>
+    </section>
+  </div>
+
+  <script>
+    // Configurações
+    const NAMES = "Felipe e Ellen";
+    const FIRST_YEAR = 2026;         // início em 12/05/2026
+    const START = { year: FIRST_YEAR, month: 5, day: 12 };
+    const END_YEAR = 2027;
+    const INITIAL_MARK_SPAN = { startMonth: 5, startDay: 12, endMonth: 6, endDay: 6 };
+    const MONTHS = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+    const DOW = ["S","T","Q","Q","S","S","D"];
+
+    // Persistência local
+    const KEY = "te-amo-marks-" + NAMES;
+    const KEY_EVENTS = "future-events-" + NAMES;
+    const z = n => String(n).padStart(2,"0");
+    const ymd = d => d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate());
+    const load = (k,d)=>{ try{ return JSON.parse(localStorage.getItem(k) ?? d); }catch{ return JSON.parse(d); } };
+    const save = (k,v)=> localStorage.setItem(k, JSON.stringify(v));
+
+    const startDate = new Date(START.year, START.month-1, START.day);
+    const endDate = new Date(END_YEAR, 11, 31);
+
+    // Linha do tempo editável (20 linhas)
+    function makeEditableEvent(dateText="", descText=""){
+      const w=document.createElement("div"); w.className="event";
+      const d=document.createElement("div"); d.className="date"; d.contentEditable="true"; d.textContent=dateText||"dd/mm";
+      const t=document.createElement("div"); t.className="text"; t.contentEditable="true"; t.textContent=descText||"Evento";
+      w.appendChild(d); w.appendChild(t); return w;
+    }
+    function mountEditableTimeline(){
+      const host=document.getElementById("future-timeline");
+      const saved = load(KEY_EVENTS,"[]");
+      const total=20; let i=0;
+      saved.forEach(ev=>{ host.appendChild(makeEditableEvent(ev.date,ev.text)); i++; });
+      for(; i<total; i++) host.appendChild(makeEditableEvent());
+      host.addEventListener("input", ()=>{
+        const all=[...host.querySelectorAll(".event")].map(e=>({
+          date:e.querySelector(".date").textContent.trim(),
+          text:e.querySelector(".text").textContent.trim()
+        }));
+        save(KEY_EVENTS, all);
+      });
+    }
+
+    // Calendário responsivo (anos empilhados; meses 1-coluna no mobile)
+    function daysInMonth(y,m){ return new Date(y, m+1, 0).getDate(); }
+    function buildYear(y, fromM=0, toM=11){
+      const yWrap=document.createElement("div");
+      const yTitle=document.createElement("div"); yTitle.className="year"; yTitle.textContent=y; yWrap.appendChild(yTitle);
+      const cal=document.createElement("div"); cal.className="cal"; yWrap.appendChild(cal);
+
+      for(let m=fromM; m<=toM; m++){
+        const box=document.createElement("div"); box.className="month";
+        const h=document.createElement("h3"); h.textContent=MONTHS[m]+" "+y; box.appendChild(h);
+
+        const dow=document.createElement("div"); dow.className="dow";
+        DOW.forEach(d=>{ const el=document.createElement("div"); el.textContent=d; dow.appendChild(el); });
+        box.appendChild(dow);
+
+        const days=document.createElement("div"); days.className="days";
+
+        // Segunda como 1º dia visual
+        const firstWeekday=(new Date(y,m,1).getDay()+6)%7;
+        for(let i=0;i<firstWeekday;i++){ const pad=document.createElement("div"); pad.className="day disabled"; days.appendChild(pad); }
+
+        const total=daysInMonth(y,m);
+        for(let d=1; d<=total; d++){
+          const cell=document.createElement("div"); cell.className="day";
+          const num=document.createElement("div"); num.className="num"; num.textContent=d; cell.appendChild(num);
+          const heart=document.createElement("div"); heart.className="heart"; heart.textContent="❤"; heart.setAttribute("data-on","false"); cell.appendChild(heart);
+
+          const thisDate=new Date(y,m,d);
+          const enabled = !(thisDate < startDate);
+          const initStart=new Date(START.year, INITIAL_MARK_SPAN.startMonth-1, INITIAL_MARK_SPAN.startDay);
+          const initEnd=new Date(START.year, INITIAL_MARK_SPAN.endMonth-1, INITIAL_MARK_SPAN.endDay);
+          const preset = thisDate>=initStart && thisDate<=initEnd;
+
+          if(!enabled){ cell.classList.add("disabled"); }
+          else{
+            const state=load(KEY,"{}"); const key=ymd(thisDate);
+            if(preset && state[key]===undefined){ state[key]=true; save(KEY,state); }
+            const checked = (load(KEY,"{}")[key]===true) || preset;
+            if(checked){ cell.classList.add("checked"); heart.setAttribute("data-on","true"); }
+
+            cell.addEventListener("click", ()=>{
+              const cur=heart.getAttribute("data-on")==="true"; const next=!cur;
+              heart.setAttribute("data-on", next?"true":"false"); cell.classList.toggle("checked", next);
+              const s=load(KEY,"{}"); s[key]=next; save(KEY,s);
+            }, {passive:true});
+          }
+          days.appendChild(cell);
+        }
+        box.appendChild(days);
+
+        const note=document.createElement("div"); note.className="month-note";
+        note.textContent='Marque com o coração os dias em que vocês disseram “te amo”.';
+        box.appendChild(note);
+
+        cal.appendChild(box);
+      }
+      return yWrap;
+    }
+
+    function mountCalendar(){
+      const root=document.getElementById("calendar-root");
+      root.innerHTML="";
+      root.appendChild(buildYear(START.year, START.month-1, 11)); // 2026: maio–dez
+      root.appendChild(buildYear(END_YEAR, 0, 11));               // 2027: jan–dez
+    }
+
+    // Init
+    mountEditableTimeline();
+    mountCalendar();
+  </script>
+</body>
+</html>
